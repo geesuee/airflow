@@ -29,6 +29,14 @@ with DAG(
   @task(task_id='task_direct_calc')
   def get_datetime_calc(**kwargs):
     from dateutil.relativedelta import relativedelta
+    # 스케줄러 부하 경감을 위해
+    # 코드 최상단이 아닌, 함수 내부에 import 문 작성
+    # 스케줄러는 주기적으로 코드를 파싱
+    # 함수 안이 아닌 곳에 import 문을 작성해 놓으면 -> 스케줄러가 부하를 많이 받음
+    # 함수 안에 작성한 부분은 주기적으로 파싱(=문법적으로 이상없는지 검사)하지 않음
+    # 대규모 환경에서는 스케줄러 부하가 큰 고민
+    # 오퍼레이터 안에서만 사용할 라이브러는 task decorater 안에서만 호출 !!
+    
     
     data_interval_end = kwargs['date_interval_end']
     prev_month_day_first = data_interval_end.in_timezone('Asia/Seoul') + relativedelta(month=-1, day=1)
