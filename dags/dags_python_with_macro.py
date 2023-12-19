@@ -38,7 +38,7 @@ with DAG(
     # 오퍼레이터 안에서만 사용할 라이브러는 task decorater 안에서만 호출 !!
     
     data_interval_end = kwargs['data_interval_end']
-    prev_month_day_first = data_interval_end.in_timezone('Asia/Seoul') + relativedelta(month=-1, day=1)
+    prev_month_day_first = data_interval_end.in_timezone('Asia/Seoul') + relativedelta(months=-1, day=1)
     prev_month_day_last = data_interval_end.in_timezone('Asia/Seoul').replace(day=1) + relativedelta(days=-1)
     print(prev_month_day_first.strftime('%Y-%m-%d'))
     print(prev_month_day_last.strftime('%Y-%m-%d'))
