@@ -1,7 +1,7 @@
 import pendulum
 
 from airflow import DAG
-from airflow.operators.python import BranchPythonOperator
+from airflow.operators.branch import BaseBranchOperator
 from airflow.operators.python import PythonOperator
 
 with DAG(
@@ -12,22 +12,22 @@ with DAG(
 ) as dag:
   
   # 선행 태스크
-  def select_random():
-    import random
-    
-    item_list = ['A', 'B', 'C']
-    selected_item = random.choice(item_list)
-    
-    if selected_item == 'A':
-      return 'task_a'
-    elif selected_item in ['B', 'C']:
-      return ['task_b', 'task_c']
-    
-    
-  python_branch_task = BranchPythonOperator(
-    task_id='python_branch_task',
-    python_callable=select_random
-  )
+  # BaseBranchOperator 상속 받아 구현
+  class CustomBranchOperator(BaseBranchOperator):
+    # 함수명, 파라미터 그대로 구현해야 함
+    def choose_branch(self, context):
+      import random
+      print(context)
+      
+      item_list = ['A', 'B', 'C']
+      selected_item = random.choice(item_list)
+      
+      if selected_item == 'A':
+        return 'task_a'
+      elif selected_item in ['B', 'C']:
+        return ['task_b', 'task_c']
+  
+  custom_branch_operator = CustomBranchOperator(task_id='python_branch_task')
   
   
   # 후행 태스크 3개(task_a, task_b, task_c)
@@ -53,4 +53,4 @@ with DAG(
   )
   
   
-  python_branch_task >> [task_a, task_b, task_c]
+  custom_branch_operator >> [task_a, task_b, task_c]
