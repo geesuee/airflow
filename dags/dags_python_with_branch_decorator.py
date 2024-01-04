@@ -2,7 +2,7 @@ import pendulum
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from airflow.operators.python import BranchPythonOperator
+from airflow.decorators import task
 
 with DAG(
   dag_id="dags_branch_python_operator",
@@ -12,6 +12,7 @@ with DAG(
 ) as dag:
   
   # 선행 태스크
+  @task.branch(task_id='python_branch_task')
   def select_random():
     import random
     
@@ -22,12 +23,6 @@ with DAG(
       return 'task_a'
     elif selected_item in ['B', 'C']:
       return ['task_b', 'task_c']
-    
-    
-  python_branch_task = BranchPythonOperator(
-    task_id='python_branch_task',
-    python_callable=select_random
-  )
   
   
   # 후행 태스크 3개(task_a, task_b, task_c)
@@ -53,4 +48,4 @@ with DAG(
   )
   
   
-  python_branch_task >> [task_a, task_b, task_c]
+  select_random() >> [task_a, task_b, task_c]
