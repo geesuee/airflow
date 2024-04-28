@@ -27,8 +27,8 @@ with DAG(
     def python_upstream_2():
         print('정상 처리')
 
-    # all_done 모든 태스크가 성공해야 실행됨
-    # - python_upsteam_1 이 실패하도록 설계 했기 때문에 해당 태스크는 실행되지 않아야 함
+    # all_done 모든 태스크가 수행 되어야(실패도 수행으로 봄, 성공 실패 모두 포함) 실행됨
+    # - python_upsteam_1 이 실패하긴 하지만 모든 태스크가 수행되기는 하기 때문에 해당 태스크도 실행되어야 함
     @task(task_id='python_downstream_1', trigger_rule='all_done')
     def python_downstream_1():
         print('정상 처리')
